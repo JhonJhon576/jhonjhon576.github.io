@@ -1,24 +1,56 @@
 # PokeMMO Dex
 
-Un Pokédex simple pour PokeMMO : les 649 Pokémon des générations 1 à 5, en français et en anglais.
+Pokédex et planificateur d'élevage pour **PokeMMO**, en français et en anglais. Gratuit, sans pub, sans compte et open source.
 
-- Recherche par nom (FR ou EN, avec ou sans accents) ou par numéro (`94`, `094`, `#94`)
-- Filtres par région, par type, et tri par stats
-- Fiche détaillée : stats de base (hexagone + barres), dégâts reçus pour les 17 types, évolutions
-- Navigation au clavier : `Ctrl K` pour chercher, `↑` `↓` dans la liste, `←` `→` pour passer au Pokémon précédent ou suivant
-- Lien direct vers un Pokémon avec son numéro : `…/#94`
-- Thème clair et sombre
+- Les 649 Pokémon des générations 1 à 5 avec les **stats, types et talents du client PokeMMO**
+- **Lieux de capture** par région : méthode (herbes, surf, cannes…), rareté, hordes et niveaux, avec une page pour chaque lieu
+- **Planificateur d'élevage** : nature et talent conseillés, IV utiles, arbre de reproduction équilibré, liste des Pokémon de base à réunir, objets et coût estimé
+- Faiblesses (table des types Gen 5, sans Fée), évolutions, tiers PvP, EV donnés
+- Recherche par nom FR ou EN, avec ou sans accents, ou par numéro (`94`, `094`, `#94`)
+- Clavier : `Ctrl K` pour chercher, `↑` `↓` dans la liste, `←` `→` pour changer de Pokémon
+- Thème clair et sombre, pages légales (mentions légales, confidentialité, cookies)
 
-## Mise en ligne avec GitHub Pages
+## Stack
 
-1. Settings → Pages
-2. Source : **Deploy from a branch**, branche `main`, dossier `/ (root)`
-3. Le site sera disponible à `https://rayan-studio.github.io/PokeMmoDex/`
+React 19, Vite, Tailwind CSS 4. Pas de serveur : le site est statique et utilise un routeur par hash (`#/pokemon/94/elevage`), donc il tourne tel quel sur GitHub Pages.
+
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # génère dist/
+```
+
+## Mise en ligne
+
+Le workflow `.github/workflows/deploy.yml` construit et publie le site à chaque push sur `main`.
+À faire une seule fois : **Settings → Pages → Source : GitHub Actions**.
 
 ## Données
 
-- Types et stats : [@pkmn/dex](https://www.npmjs.com/package/@pkmn/dex) (données Smogon/Showdown) en Génération 5, la base de PokeMMO, sans le type Fée.
-- Noms français : paquet npm `pokemon`.
-- Sprites : sprites Noir & Blanc de Pokémon Showdown.
+`src/data/dex.json` est généré par `scripts/build-data.mjs` à partir de :
 
-PokeMMO n'a pas d'API publique. Les ajustements propres au jeu (tiers, hordes, lieux de capture) ne sont pas inclus.
+- [PokeMMO-Tools/pokemmo-data](https://github.com/PokeMMO-Tools/pokemmo-data) : Pokémon, stats, talents, groupes œuf, lieux et noms français, exportés du client PokeMMO
+- [PokeMMOZone/PokeMMO-Data](https://github.com/PokeMMOZone/PokeMMO-Data) : tiers PvP
+- [smogon/pokemon-showdown](https://github.com/smogon/pokemon-showdown) : notes des talents et table des types Gen 5
+
+Pour mettre à jour, clone ces trois dépôts à côté de celui-ci puis lance :
+
+```bash
+npm run data
+```
+
+Les sprites Noir & Blanc viennent de Pokémon Showdown.
+
+## Structure
+
+```
+src/
+  lib/        données, élevage (arbre, conseils), traductions, routeur, stockage local
+  components/ barre latérale, menus déroulants, sprites
+  pages/      fiche, lieux, page d'un lieu, élevage, pages légales
+scripts/      génération des données
+```
+
+## Licence
+
+Code sous licence [MIT](LICENSE). Pokémon et les noms des Pokémon sont des marques de Nintendo, Creatures Inc., GAME FREAK inc. et The Pokémon Company. PokeMMO appartient à ses propriétaires. Ce projet de fan n'est affilié à aucun d'eux.
