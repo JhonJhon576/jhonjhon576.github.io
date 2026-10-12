@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Pokédex PokeMMO des générations 1 à 5, en français et en anglais.">
+<title>PokeMMO Dex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@300;400;500&display=swap">
+<style>
+/* Layout: lecteur de Pokédex en deux volets, liste à gauche et fiche à droite.
+   Toute l'interface prend la teinte du type du Pokémon affiché (--h). */
+@property --h { syntax: "<number>"; inherits: true; initial-value: 145; }
+:root {
+  --h: 145;
+  --cc: .12;
+  --bg: oklch(0.975 0.008 var(--h));
+  --panel: oklch(0.995 0.003 var(--h));
+  --sunk: oklch(0.945 0.014 var(--h));
+  --line: oklch(0.9 0.012 var(--h));
+  --fg: oklch(0.2 0.015 var(--h));
+  --muted: oklch(0.5 0.02 var(--h));
+  --faint: oklch(0.66 0.02 var(--h));
+  --accent: oklch(0.6 var(--cc) var(--h));
+  --accent-soft: oklch(0.92 calc(var(--cc) * .45) var(--h));
+  --accent-ink: oklch(0.42 calc(var(--cc) * .9) var(--h));
+  --disc: oklch(0.88 calc(var(--cc) * .5) var(--h));
+  --font: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --shadow: 0 1px 2px rgb(0 0 0 / .04), 0 14px 36px -18px rgb(0 0 0 / .18);
+  transition: --h .5s ease;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: oklch(0.16 0.012 var(--h)); --panel: oklch(0.19 0.012 var(--h)); --sunk: oklch(0.225 0.016 var(--h));
+    --line: oklch(0.28 0.016 var(--h)); --fg: oklch(0.96 0.006 var(--h)); --muted: oklch(0.72 0.016 var(--h)); --faint: oklch(0.55 0.016 var(--h));
+    --accent: oklch(0.72 var(--cc) var(--h)); --accent-soft: oklch(0.3 calc(var(--cc) * .45) var(--h)); --accent-ink: oklch(0.85 calc(var(--cc) * .7) var(--h));
+    --disc: oklch(0.3 calc(var(--cc) * .55) var(--h));
+    --shadow: 0 1px 2px rgb(0 0 0 / .5), 0 18px 40px -20px rgb(0 0 0 / .8);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: oklch(0.16 0.012 var(--h)); --panel: oklch(0.19 0.012 var(--h)); --sunk: oklch(0.225 0.016 var(--h));
+  --line: oklch(0.28 0.016 var(--h)); --fg: oklch(0.96 0.006 var(--h)); --muted: oklch(0.72 0.016 var(--h)); --faint: oklch(0.55 0.016 var(--h));
+  --accent: oklch(0.72 var(--cc) var(--h)); --accent-soft: oklch(0.3 calc(var(--cc) * .45) var(--h)); --accent-ink: oklch(0.85 calc(var(--cc) * .7) var(--h));
+  --disc: oklch(0.3 calc(var(--cc) * .55) var(--h));
+  --shadow: 0 1px 2px rgb(0 0 0 / .5), 0 18px 40px -20px rgb(0 0 0 / .8);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; overflow: hidden; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+::selection { background: var(--accent-soft); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+.app { height: 100%; display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); }
+
+/* ---------- Volet liste ---------- */
+.side { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--line); background: var(--panel); }
+.side-head { padding: 18px 18px 12px; display: grid; gap: 12px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand b { font-weight: 500; font-size: 1rem; letter-spacing: -.01em; }
+.logo { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--fg); position: relative; overflow: hidden; flex: none; }
+.logo::before { content: ""; position: absolute; inset: 0 0 50%; background: var(--accent); border-bottom: 1.5px solid var(--fg); }
+.logo::after { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; translate: -50% -50%; border-radius: 50%; background: var(--panel); border: 1.5px solid var(--fg); }
+.brand .spacer { flex: 1; }
+.tiny { height: 30px; min-width: 30px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line); background: transparent; cursor: pointer; display: inline-grid; place-items: center; font-size: .76rem; font-weight: 500; color: var(--muted); }
+.tiny:hover { color: var(--fg); background: var(--sunk); }
+
+.search { position: relative; }
+.search input { width: 100%; height: 42px; padding: 0 12px 0 38px; border-radius: 11px; border: 1px solid transparent; background: var(--sunk); font-size: .95rem; }
+.search input::placeholder { color: var(--faint); }
+.search input:focus { outline: none; border-color: var(--accent); background: var(--panel); }
+.search svg { position: absolute; left: 13px; top: 50%; translate: 0 -50%; color: var(--faint); }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* Menus déroulants */
+.dd { position: relative; }
+.dd-btn { height: 32px; display: inline-flex; align-items: center; gap: 6px; padding: 0 9px 0 11px; border-radius: 999px; border: 1px solid var(--line); background: transparent; cursor: pointer; white-space: nowrap; font-size: .82rem; color: var(--muted); }
+.dd-btn:hover, .dd-btn[aria-expanded="true"] { color: var(--fg); background: var(--sunk); }
+.dd-btn.on { color: var(--accent-ink); background: var(--accent-soft); border-color: transparent; }
+.dd-btn .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+.dd-btn svg { transition: rotate .2s; }
+.dd-btn[aria-expanded="true"] svg { rotate: 180deg; }
+.dd-menu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; min-width: 210px; max-height: min(360px, 60vh); overflow-y: auto; margin: 0; padding: 5px; list-style: none;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); animation: pop .14s ease-out; }
+@keyframes pop { from { opacity: 0; translate: 0 -4px; } }
+.dd-menu li { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px; cursor: pointer; color: var(--muted); font-size: .88rem; outline: none; }
+.dd-menu li:hover, .dd-menu li:focus { background: var(--sunk); color: var(--fg); }
+.dd-menu li[aria-selected="true"] { color: var(--fg); font-weight: 500; }
+.dd-menu li .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex: none; }
+.dd-menu li .tag { margin-left: auto; font-family: var(--mono); font-size: .7rem; color: var(--faint); }
+.dd-menu li .check { margin-left: auto; opacity: 0; color: var(--accent); flex: none; }
+.dd-menu li .tag + .check { margin-left: 0; }
+.dd-menu li[aria-selected="true"] .check { opacity: 1; }
+.dd-menu .sep { height: 1px; background: var(--line); margin: 5px 4px; padding: 0; pointer-events: none; }
+
+.count { padding: 10px 18px 6px; font-size: .74rem; color: var(--faint); text-transform: uppercase; letter-spacing: .09em; display: flex; justify-content: space-between; }
+.count button { background: none; border: 0; padding: 0; color: var(--faint); cursor: pointer; text-transform: inherit; letter-spacing: inherit; font-size: inherit; }
+.count button:hover { color: var(--fg); }
+.list { flex: 1; overflow-y: auto; padding: 0 8px 16px; margin: 0; list-style: none; scrollbar-width: thin; }
+.row { display: grid; grid-template-columns: 38px 40px minmax(0, 1fr) auto; align-items: center; gap: 8px; width: 100%; padding: 3px 10px 3px 8px; border: 0; background: transparent; border-radius: 10px; cursor: pointer; text-align: left; content-visibility: auto; contain-intrinsic-size: 46px; }
+.row:hover { background: var(--sunk); }
+.row[aria-current="true"] { background: var(--accent-soft); }
+.row .n { font-family: var(--mono); font-size: .72rem; color: var(--faint); font-variant-numeric: tabular-nums; }
+.row[aria-current="true"] .n { color: var(--accent-ink); }
+.row .ico { width: 40px; height: 40px; display: grid; place-items: center; }
+.row .ico img { width: 40px; height: 40px; image-rendering: pixelated; object-fit: contain; }
+.row .nm { font-size: .93rem; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .dots { display: flex; gap: 3px; }
+.row .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.ph { width: 28px; height: 28px; border-radius: 50%; background: color-mix(in oklab, var(--c, var(--accent)) 22%, transparent); border: 1px solid color-mix(in oklab, var(--c, var(--accent)) 40%, transparent); }
+.empty { padding: 40px 18px; color: var(--muted); font-size: .9rem; text-align: center; }
+
+/* ---------- Volet fiche ---------- */
+.detail { overflow-y: auto; min-height: 0; position: relative; }
+.detail-inner { max-width: 980px; margin: 0 auto; padding: 22px 32px 56px; display: grid; gap: 34px; }
+.bar-top { display: flex; align-items: center; gap: 10px; }
+.bar-top .back { display: none; }
+.bar-top .where { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
+.bar-top .spacer { flex: 1; }
+.nav-btn { height: 34px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; display: inline-flex; align-items: center; gap: 7px; font-size: .82rem; color: var(--muted); max-width: 46vw; }
+.nav-btn:hover { color: var(--fg); }
+.nav-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-btn[disabled] { opacity: .35; cursor: default; }
+
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: 28px; align-items: center; }
+.hero .num { font-family: var(--mono); font-weight: 300; font-size: clamp(3.4rem, 9vw, 6.5rem); line-height: .9; letter-spacing: -.04em; color: transparent; -webkit-text-stroke: 1.2px var(--accent); }
+.hero h1 { margin: 10px 0 2px; font-weight: 300; font-size: clamp(2.2rem, 5.2vw, 3.8rem); line-height: 1; letter-spacing: -.045em; text-wrap: balance; }
+.hero .alt { color: var(--faint); margin: 0 0 16px; }
+.types { display: flex; gap: 6px; flex-wrap: wrap; }
+.type { display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px; border-radius: 999px; font-size: .82rem; font-weight: 500;
+  color: color-mix(in oklab, var(--c) 70%, var(--fg)); background: color-mix(in oklab, var(--c) 15%, var(--panel)); }
+.type::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+.facts { display: flex; gap: 22px; margin-top: 22px; flex-wrap: wrap; }
+.facts div { display: grid; }
+.facts span { font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--faint); }
+.facts b { font-weight: 400; font-family: var(--mono); font-size: 1.05rem; }
+.disc { aspect-ratio: 1; max-width: 100%; border-radius: 50%; display: grid; place-items: center; position: relative;
+  background: radial-gradient(circle at 50% 62%, var(--disc), transparent 68%); }
+.disc::after { content: ""; position: absolute; inset: 8%; border-radius: 50%; border: 1px dashed color-mix(in oklab, var(--accent) 35%, transparent); }
+.disc img { width: 62%; height: 62%; image-rendering: pixelated; object-fit: contain; position: relative; z-index: 1; animation: rise .35s ease-out; }
+.disc .ph { width: 34%; height: 34%; }
+@keyframes rise { from { opacity: 0; translate: 0 8px; } }
+
+h3 { margin: 0 0 16px; font-size: .74rem; font-weight: 500; text-transform: uppercase; letter-spacing: .12em; color: var(--faint); display: flex; justify-content: space-between; }
+h3 em { font-style: normal; font-family: var(--mono); letter-spacing: 0; text-transform: none; color: var(--muted); }
+.two { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 32px; align-items: center; }
+.radar { width: 100%; max-width: 260px; height: auto; overflow: visible; }
+.radar .ring { fill: none; stroke: var(--line); }
+.radar .axis { stroke: var(--line); }
+.radar .shape { fill: color-mix(in oklab, var(--accent) 26%, transparent); stroke: var(--accent); stroke-width: 1.5; stroke-linejoin: round; transition: d .35s; }
+.radar text { fill: var(--muted); font: 500 10px var(--font); text-anchor: middle; letter-spacing: .06em; }
+.radar text.v { fill: var(--fg); font: 400 11px var(--mono); }
+.stats { display: grid; gap: 11px; }
+.stat { display: grid; grid-template-columns: 86px 34px minmax(0, 1fr); gap: 12px; align-items: center; font-size: .88rem; color: var(--muted); }
+.stat b { font-family: var(--mono); font-weight: 400; text-align: right; color: var(--fg); font-variant-numeric: tabular-nums; }
+.track { height: 6px; border-radius: 99px; background: var(--sunk); overflow: hidden; }
+.track i { display: block; height: 100%; border-radius: 99px; background: var(--accent); transition: width .4s ease; }
+.stat.total { padding-top: 10px; border-top: 1px solid var(--line); color: var(--fg); }
+
+.matrix { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; }
+.cell { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 10px; background: var(--sunk); font-size: .8rem; color: var(--muted); }
+.cell .t { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.cell .t i { width: 7px; height: 7px; border-radius: 50%; background: var(--c); flex: none; }
+.cell b { font-family: var(--mono); font-weight: 400; font-size: .78rem; }
+.cell.w2 { background: color-mix(in oklab, oklch(0.62 0.17 28) 16%, var(--panel)); color: var(--fg); }
+.cell.w4 { background: color-mix(in oklab, oklch(0.62 0.17 28) 30%, var(--panel)); color: var(--fg); font-weight: 500; }
+.cell.r { opacity: .75; }
+.cell.r b { color: oklch(0.6 0.12 150); }
+.cell.im { opacity: .5; }
+.cell.im .t span { text-decoration: line-through; }
+.cell.n { opacity: .5; }
+
+.evo { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.evo .stage-col { display: grid; gap: 6px; }
+.evo button { display: grid; justify-items: center; gap: 2px; padding: 8px 14px 10px; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; min-width: 96px; color: var(--muted); font-size: .82rem; }
+.evo button:hover { color: var(--fg); border-color: var(--accent); }
+.evo button[aria-current="true"] { background: var(--accent-soft); border-color: transparent; color: var(--accent-ink); font-weight: 500; }
+.evo button .ico { width: 56px; height: 56px; display: grid; place-items: center; }
+.evo button img { width: 56px; height: 56px; image-rendering: pixelated; object-fit: contain; }
+.evo .arrow { color: var(--faint); }
+.note { margin: 0; font-size: .78rem; color: var(--faint); }
+.status { display: grid; place-items: center; height: 100%; color: var(--muted); gap: 12px; align-content: center; text-align: center; padding: 0 16px; }
+.spinner { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent); animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Téléphone : liste, puis fiche plein écran ---------- */
+@media (max-width: 860px) {
+  .app { grid-template-columns: 1fr; }
+  .side { border-right: 0; }
+  .detail { position: fixed; inset: 0; z-index: 20; background: var(--bg); padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); translate: 100% 0; transition: translate .28s cubic-bezier(.2,.8,.2,1); visibility: hidden; }
+  .app.open .detail { translate: 0 0; visibility: visible; }
+  .bar-top .back { display: inline-flex; }
+  .detail-inner { padding: 14px 16px 48px; gap: 28px; }
+  .hero { grid-template-columns: 1fr; }
+  .hero .disc { order: -1; width: min(260px, 70vw); margin: 0 auto; }
+  .two { grid-template-columns: 1fr; justify-items: center; }
+  .two .stats { width: 100%; }
+  .nav-btn span { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <aside class="side">
+    <div class="side-head">
+      <div class="brand">
+        <span class="logo" aria-hidden="true"></span><b>PokeMMO Dex</b>
+        <span class="spacer"></span>
+        <button class="tiny" id="lang-btn" type="button">EN</button>
+        <button class="tiny" id="theme-btn" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+      </div>
+      <label class="search">
+        <span class="sr" id="q-label"></span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" autocomplete="off" spellcheck="false" aria-labelledby="q-label">
+      </label>
+      <div class="filters">
+        <div class="dd" id="dd-gen"></div>
+        <div class="dd" id="dd-type"></div>
+        <div class="dd" id="dd-sort"></div>
+      </div>
+    </div>
+    <div class="count"><span id="showing"></span><button type="button" id="reset"></button></div>
+    <ul class="list" id="list" role="list"></ul>
+  </aside>
+
+  <section class="detail" id="detail" aria-live="polite">
+    <div class="status" id="status"><div class="spinner"></div><span id="status-text">…</span></div>
+  </section>
+</div>
+
+<script type="module">
+// Stats et types : données Smogon/Showdown (@pkmn/dex) en Génération 5, la base de PokeMMO (pas de type Fée).
+// Sprites : sprites Noir & Blanc de Showdown, animés sur la fiche.
+const SPRITE = id => `https://play.pokemonshowdown.com/sprites/gen5/${id}.png`;
+const SPRITE_ANI = id => `https://play.pokemonshowdown.com/sprites/gen5ani/${id}.gif`;
+
+const FR_NAMES = "Bulbizarre|Herbizarre|Florizarre|Salamèche|Reptincel|Dracaufeu|Carapuce|Carabaffe|Tortank|Chenipan|Chrysacier|Papilusion|Aspicot|Coconfort|Dardargnan|Roucool|Roucoups|Roucarnage|Rattata|Rattatac|Piafabec|Rapasdepic|Abo|Arbok|Pikachu|Raichu|Sabelette|Sablaireau|Nidoran♀|Nidorina|Nidoqueen|Nidoran♂|Nidorino|Nidoking|Mélofée|Mélodelfe|Goupix|Feunard|Rondoudou|Grodoudou|Nosferapti|Nosferalto|Mystherbe|Ortide|Rafflesia|Paras|Parasect|Mimitoss|Aéromite|Taupiqueur|Triopikeur|Miaouss|Persian|Psykokwak|Akwakwak|Férosinge|Colossinge|Caninos|Arcanin|Ptitard|Têtarte|Tartard|Abra|Kadabra|Alakazam|Machoc|Machopeur|Mackogneur|Chétiflor|Boustiflor|Empiflor|Tentacool|Tentacruel|Racaillou|Gravalanch|Grolem|Ponyta|Galopa|Ramoloss|Flagadoss|Magnéti|Magnéton|Canarticho|Doduo|Dodrio|Otaria|Lamantine|Tadmorv|Grotadmorv|Kokiyas|Crustabri|Fantominus|Spectrum|Ectoplasma|Onix|Soporifik|Hypnomade|Krabby|Krabboss|Voltorbe|Électrode|Nœunœuf|Noadkoko|Osselait|Ossatueur|Kicklee|Tygnon|Excelangue|Smogo|Smogogo|Rhinocorne|Rhinoféros|Leveinard|Saquedeneu|Kangourex|Hypotrempe|Hypocéan|Poissirène|Poissoroy|Stari|Staross|M. Mime|Insécateur|Lippoutou|Élektek|Magmar|Scarabrute|Tauros|Magicarpe|Léviator|Lokhlass|Métamorph|Évoli|Aquali|Voltali|Pyroli|Porygon|Amonita|Amonistar|Kabuto|Kabutops|Ptéra|Ronflex|Artikodin|Électhor|Sulfura|Minidraco|Draco|Dracolosse|Mewtwo|Mew|Germignon|Macronium|Méganium|Héricendre|Feurisson|Typhlosion|Kaiminus|Crocrodil|Aligatueur|Fouinette|Fouinar|Hoothoot|Noarfang|Coxy|Coxyclaque|Mimigal|Migalos|Nostenfer|Loupio|Lanturn|Pichu|Mélo|Toudoudou|Togepi|Togetic|Natu|Xatu|Wattouat|Lainergie|Pharamp|Joliflor|Marill|Azumarill|Simularbre|Tarpaud|Granivol|Floravol|Cotovol|Capumain|Tournegrin|Héliatronc|Yanma|Axoloto|Maraiste|Mentali|Noctali|Cornèbre|Roigada|Feuforêve|Zarbi|Qulbutoké|Girafarig|Pomdepic|Foretress|Insolourdo|Scorplane|Steelix|Snubbull|Granbull|Qwilfish|Cizayox|Caratroc|Scarhino|Farfuret|Teddiursa|Ursaring|Limagma|Volcaropod|Marcacrin|Cochignon|Corayon|Rémoraid|Octillery|Cadoizo|Démanta|Airmure|Malosse|Démolosse|Hyporoi|Phanpy|Donphan|Porygon2|Cerfrousse|Queulorior|Debugant|Kapoera|Lippouti|Élekid|Magby|Écrémeuh|Leuphorie|Raikou|Entei|Suicune|Embrylex|Ymphect|Tyranocif|Lugia|Ho-Oh|Celebi|Arcko|Massko|Jungko|Poussifeu|Galifeu|Braségali|Gobou|Flobio|Laggron|Medhyèna|Grahyèna|Zigzaton|Linéon|Chenipotte|Armulys|Charmillon|Blindalys|Papinox|Nénupiot|Lombre|Ludicolo|Grainipiot|Pifeuil|Tengalice|Nirondelle|Hélédelle|Goélise|Bekipan|Tarsal|Kirlia|Gardevoir|Arakdo|Maskadra|Balignon|Chapignon|Parecool|Vigoroth|Monaflèmit|Ningale|Ninjask|Munja|Chuchmur|Ramboum|Brouhabam|Makuhita|Hariyama|Azurill|Tarinor|Skitty|Delcatty|Ténéfix|Mysdibule|Galekid|Galegon|Galeking|Méditikka|Charmina|Dynavolt|Élecsprint|Posipi|Négapi|Muciole|Lumivole|Rosélia|Gloupti|Avaltout|Carvanha|Sharpedo|Wailmer|Wailord|Chamallot|Camérupt|Chartor|Spoink|Groret|Spinda|Kraknoix|Vibraninf|Libégon|Cacnea|Cacturne|Tylton|Altaria|Mangriff|Séviper|Séléroc|Solaroc|Barloche|Barbicha|Écrapince|Colhomard|Balbuto|Kaorine|Lilia|Vacilys|Anorith|Armaldo|Barpau|Milobellus|Morphéo|Kecleon|Polichombr|Branette|Skelénox|Téraclope|Tropius|Éoko|Absol|Okéoké|Stalgamin|Oniglali|Obalie|Phogleur|Kaimorse|Coquiperl|Serpang|Rosabyss|Relicanth|Lovdisc|Draby|Drackhaus|Drattak|Terhal|Métang|Métalosse|Regirock|Regice|Registeel|Latias|Latios|Kyogre|Groudon|Rayquaza|Jirachi|Deoxys|Tortipouss|Boskara|Torterra|Ouisticram|Chimpenfeu|Simiabraz|Tiplouf|Prinplouf|Pingoléon|Étourmi|Étourvol|Étouraptor|Keunotor|Castorno|Crikzik|Mélokrik|Lixy|Luxio|Luxray|Rozbouton|Roserade|Kranidos|Charkos|Dinoclier|Bastiodon|Cheniti|Cheniselle|Papilord|Apitrini|Apireine|Pachirisu|Mustébouée|Mustéflott|Ceribou|Ceriflor|Sancoki|Tritosor|Capidextre|Baudrive|Grodrive|Laporeille|Lockpin|Magirêve|Corboss|Chaglam|Chaffreux|Korillon|Moufouette|Moufflair|Archéomire|Archéodong|Manzaï|Mime Jr.|Ptiravi|Pijako|Spiritomb|Griknot|Carmache|Carchacrok|Goinfrex|Riolu|Lucario|Hippopotas|Hippodocus|Rapion|Drascore|Cradopaud|Coatox|Vortente|Écayon|Luminéon|Babimanta|Blizzi|Blizzaroi|Dimoret|Magnézone|Coudlangue|Rhinastoc|Bouldeneu|Élekable|Maganon|Togekiss|Yanméga|Phyllali|Givrali|Scorvol|Mammochon|Porygon-Z|Gallame|Tarinorme|Noctunoir|Momartik|Motisma|Créhelf|Créfollet|Créfadet|Dialga|Palkia|Heatran|Regigigas|Giratina|Cresselia|Phione|Manaphy|Darkrai|Shaymin|Arceus|Victini|Vipélierre|Lianaja|Majaspic|Gruikui|Grotichon|Roitiflam|Moustillon|Mateloutre|Clamiral|Ratentif|Miradar|Ponchiot|Ponchien|Mastouffe|Chacripan|Léopardus|Feuillajou|Feuiloutan|Flamajou|Flamoutan|Flotajou|Flotoutan|Munna|Mushana|Poichigeon|Colombeau|Déflaisan|Zébibron|Zéblitz|Nodulithe|Géolithe|Gigalithe|Chovsourir|Rhinolove|Rototaupe|Minotaupe|Nanméouïe|Charpenti|Ouvrifier|Bétochef|Tritonde|Batracné|Crapustule|Judokrak|Karaclée|Larveyette|Couverdure|Manternel|Venipatte|Scobolide|Brutapode|Doudouvet|Farfaduvet|Chlorobule|Fragilady|Bargantua|Mascaïman|Escroco|Crocorible|Darumarond|Darumacho|Maracachi|Crabicoque|Crabaraque|Baggiguane|Baggaïd|Cryptéro|Tutafeh|Tutankafer|Carapagos|Mégapagos|Arkéapti|Aéroptéryx|Miamiasme|Miasmax|Zorua|Zoroark|Chinchidou|Pashmilla|Scrutella|Mesmérella|Sidérella|Nucléos|Méios|Symbios|Couaneton|Lakmécygne|Sorbébé|Sorboul|Sorbouboul|Vivaldaim|Haydaim|Emolga|Carabing|Lançargot|Trompignon|Gaulet|Viskuse|Moyade|Mamanbo|Statitik|Mygavolt|Grindur|Noacier|Tic|Clic|Cliticlic|Anchwatt|Lampéroie|Ohmassacre|Lewsor|Neitram|Funécire|Mélancolux|Lugulabre|Coupenotte|Incisache|Tranchodon|Polarhume|Polagriffe|Hexagel|Escargaume|Limaspeed|Limonde|Kungfouine|Shaofouine|Drakkarmin|Gringolem|Golemastoc|Scalpion|Scalproie|Frison|Furaiglon|Gueriaigle|Vostourno|Vaututrice|Aflamanoir|Fermite|Solochi|Diamat|Trioxhydre|Pyronille|Pyrax|Cobaltium|Terrakium|Viridium|Boréas|Fulguris|Reshiram|Zekrom|Démétéros|Kyurem|Keldeo|Meloetta|Genesect".split("|");
+
+const TYPES = {
+  Normal:   { fr: "Normal",   h: 85,  c: .04 }, Fire:     { fr: "Feu",      h: 45,  c: .15 },
+  Water:    { fr: "Eau",      h: 250, c: .13 }, Grass:    { fr: "Plante",   h: 145, c: .14 },
+  Electric: { fr: "Électrik", h: 95,  c: .14 }, Ice:      { fr: "Glace",    h: 205, c: .10 },
+  Fighting: { fr: "Combat",   h: 25,  c: .15 }, Poison:   { fr: "Poison",   h: 320, c: .13 },
+  Ground:   { fr: "Sol",      h: 70,  c: .10 }, Flying:   { fr: "Vol",      h: 275, c: .10 },
+  Psychic:  { fr: "Psy",      h: 355, c: .15 }, Bug:      { fr: "Insecte",  h: 120, c: .13 },
+  Rock:     { fr: "Roche",    h: 80,  c: .07 }, Ghost:    { fr: "Spectre",  h: 295, c: .10 },
+  Dragon:   { fr: "Dragon",   h: 270, c: .16 }, Dark:     { fr: "Ténèbres", h: 40,  c: .03 },
+  Steel:    { fr: "Acier",    h: 230, c: .03 },
+};
+for (const t of Object.values(TYPES)) t.col = `oklch(0.66 ${t.c} ${t.h})`;
+
+const I18N = {
+  fr: {
+    search: "Nom ou numéro…", searchLabel: "Rechercher un Pokémon par nom ou numéro",
+    region: "Région", type: "Type", sortLbl: "Tri", allRegions: "Toutes les régions", allTypes: "Tous les types",
+    regions: { 1: "Kanto", 2: "Johto", 3: "Hoenn", 4: "Sinnoh", 5: "Unys" },
+    sort: { "num-asc": "N° croissant", "num-desc": "N° décroissant", "name-asc": "Nom A → Z", "bst-desc": "Total des stats", "hp-desc": "PV", "atk-desc": "Attaque", "def-desc": "Défense", "spa-desc": "Att. Spé.", "spd-desc": "Déf. Spé.", "spe-desc": "Vitesse" },
+    stats: { hp: "PV", atk: "Attaque", def: "Défense", spa: "Att. Spé.", spd: "Déf. Spé.", spe: "Vitesse" },
+    radar: { hp: "PV", atk: "ATQ", def: "DÉF", spa: "A.SPÉ", spd: "D.SPÉ", spe: "VIT" },
+    showing: n => `${n} Pokémon`, reset: "Réinitialiser",
+    loading: "Chargement du Pokédex…", error: "Impossible de charger les données. Vérifie ta connexion puis recharge la page.",
+    noMatch: "Aucun Pokémon ne correspond. Essaie un autre nom ou un numéro.",
+    baseStats: "Stats de base", total: "Total", matchups: "Dégâts reçus", evo: "Évolutions", gen: "Génération", bst: "Total stats",
+    note: "Types et stats de la Génération 5, sur laquelle PokeMMO est basé.", back: "Liste", prev: "Précédent", next: "Suivant",
+    theme: "Changer de thème", lang: "EN", langLabel: "Switch to English",
+  },
+  en: {
+    search: "Name or number…", searchLabel: "Search a Pokémon by name or number",
+    region: "Region", type: "Type", sortLbl: "Sort", allRegions: "All regions", allTypes: "All types",
+    regions: { 1: "Kanto", 2: "Johto", 3: "Hoenn", 4: "Sinnoh", 5: "Unova" },
+    sort: { "num-asc": "Dex # ascending", "num-desc": "Dex # descending", "name-asc": "Name A → Z", "bst-desc": "Base stat total", "hp-desc": "HP", "atk-desc": "Attack", "def-desc": "Defense", "spa-desc": "Sp. Atk", "spd-desc": "Sp. Def", "spe-desc": "Speed" },
+    stats: { hp: "HP", atk: "Attack", def: "Defense", spa: "Sp. Atk", spd: "Sp. Def", spe: "Speed" },
+    radar: { hp: "HP", atk: "ATK", def: "DEF", spa: "SPA", spd: "SPD", spe: "SPE" },
+    showing: n => `${n} Pokémon`, reset: "Reset",
+    loading: "Loading the Pokédex…", error: "Couldn't load the data. Check your connection and reload the page.",
+    noMatch: "No Pokémon matches. Try another name or a number.",
+    baseStats: "Base stats", total: "Total", matchups: "Damage taken", evo: "Evolutions", gen: "Generation", bst: "Stat total",
+    note: "Generation 5 types and stats, which PokeMMO is based on.", back: "List", prev: "Previous", next: "Next",
+    theme: "Toggle theme", lang: "FR", langLabel: "Passer en français",
+  },
+};
+
+const genOf = n => n <= 151 ? 1 : n <= 251 ? 2 : n <= 386 ? 3 : n <= 493 ? 4 : 5;
+const pad = n => String(n).padStart(3, "0");
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d) { try { return localStorage.getItem("pmdex:" + k) ?? d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("pmdex:" + k, v); } catch {} },
+};
+
+const state = { q: "", gen: "", type: "", sort: "num-asc", lang: store.get("lang", "fr"), current: 0 };
+let ALL = [], VISIBLE = [], BY_EN = new Map(), BY_NUM = new Map(), dex = null;
+const T = () => I18N[state.lang];
+const nameOf = p => state.lang === "fr" ? p.fr : p.en;
+const typeName = t => state.lang === "fr" ? TYPES[t].fr : t;
+
+// ---------- Images avec repli ----------
+const img = (p, ani = false) =>
+  `<img src="${ani ? SPRITE_ANI(p.sprite) : SPRITE(p.sprite)}" ${ani ? `data-fb="${SPRITE(p.sprite)}"` : ""} alt="" loading="lazy" decoding="async" data-ph style="--c:${TYPES[p.types[0]].col}">`;
+document.addEventListener("error", e => {
+  const el = e.target;
+  if (!(el instanceof HTMLImageElement) || !el.hasAttribute("data-ph")) return;
+  if (el.dataset.fb) { const fb = el.dataset.fb; delete el.dataset.fb; el.src = fb; return; }
+  const d = document.createElement("div"); d.className = "ph"; d.style.cssText = el.style.cssText;
+  el.replaceWith(d);
+}, true);
+
+// ---------- Menus déroulants ----------
+const CHEVRON = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+const CHECK = `<svg class="check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"/></svg>`;
+
+function dropdown(el, { label, options, value, active, onChange }) {
+  const cur = options.find(o => o.value === value) || options[0];
+  el.innerHTML = `<button type="button" class="dd-btn${active ? " on" : ""}" aria-haspopup="listbox" aria-expanded="false" aria-label="${label}">
+      ${cur.color ? `<span class="dot" style="--c:${cur.color}"></span>` : ""}<span>${active ? (cur.short || cur.label) : label}</span>${CHEVRON}</button>
+    <ul class="dd-menu" role="listbox" hidden>${options.map(o => o.sep ? `<li class="sep" role="presentation"></li>` :
+      `<li role="option" tabindex="-1" data-value="${o.value}" aria-selected="${o.value === value}">${o.color ? `<span class="dot" style="--c:${o.color}"></span>` : ""}${o.label}${o.tag ? `<span class="tag">${o.tag}</span>` : ""}${CHECK}</li>`).join("")}</ul>`;
+  const btn = el.querySelector(".dd-btn"), menu = el.querySelector(".dd-menu");
+  const items = () => [...menu.querySelectorAll("[role=option]")];
+  const open = () => { closeAllDropdowns(el); menu.hidden = false; btn.setAttribute("aria-expanded", "true"); (menu.querySelector('[aria-selected="true"]') || items()[0]).focus(); };
+  const close = refocus => { menu.hidden = true; btn.setAttribute("aria-expanded", "false"); if (refocus) btn.focus(); };
+  const pick = li => { close(true); if (li.dataset.value !== value) onChange(li.dataset.value); };
+  el._close = () => close(false);
+  btn.onclick = () => menu.hidden ? open() : close(false);
+  btn.onkeydown = e => { if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); e.stopPropagation(); open(); } };
+  menu.onclick = e => { const li = e.target.closest("[role=option]"); if (li) pick(li); };
+  menu.onkeydown = e => {
+    e.stopPropagation();
+    const list = items(), i = list.indexOf(document.activeElement);
+    if (e.key === "ArrowDown") { e.preventDefault(); list[Math.min(i + 1, list.length - 1)].focus(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); list[Math.max(i - 1, 0)].focus(); }
+    else if (e.key === "Home") { e.preventDefault(); list[0].focus(); }
+    else if (e.key === "End") { e.preventDefault(); list.at(-1).focus(); }
+    else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (list[i]) pick(list[i]); }
+    else if (e.key === "Escape" || e.key === "Tab") close(e.key === "Escape");
+  };
+}
+function closeAllDropdowns(except) { document.querySelectorAll(".dd").forEach(d => d !== except && d._close && d._close()); }
+document.addEventListener("pointerdown", e => { if (!e.target.closest(".dd")) closeAllDropdowns(); });
+
+function buildControls() {
+  const L = T();
+  document.documentElement.lang = state.lang;
+  $("q").placeholder = L.search; $("q-label").textContent = L.searchLabel;
+  $("lang-btn").textContent = L.lang; $("lang-btn").setAttribute("aria-label", L.langLabel);
+  $("theme-btn").setAttribute("aria-label", L.theme);
+  $("reset").textContent = L.reset;
+  dropdown($("dd-gen"), {
+    label: L.region, value: state.gen, active: !!state.gen,
+    options: [{ value: "", label: L.allRegions }, { sep: true }, ...[1, 2, 3, 4, 5].map(g => ({ value: String(g), label: L.regions[g], tag: `Gen ${g}` }))],
+    onChange: v => { state.gen = v; buildControls(); renderList(); },
+  });
+  dropdown($("dd-type"), {
+    label: L.type, value: state.type, active: !!state.type,
+    options: [{ value: "", label: L.allTypes }, { sep: true }, ...Object.keys(TYPES).map(t => ({ value: t, label: typeName(t), color: TYPES[t].col }))],
+    onChange: v => { state.type = v; buildControls(); renderList(); },
+  });
+  const keys = Object.keys(L.sort);
+  dropdown($("dd-sort"), {
+    label: L.sortLbl, value: state.sort, active: state.sort !== "num-asc",
+    options: [...keys.slice(0, 3).map(k => ({ value: k, label: L.sort[k] })), { sep: true }, ...keys.slice(3).map(k => ({ value: k, label: L.sort[k] }))],
+    onChange: v => { state.sort = v; buildControls(); renderList(); },
+  });
+  $("reset").hidden = !(state.gen || state.type || state.q || state.sort !== "num-asc");
+}
+
+// ---------- Liste ----------
+function matches(p) {
+  if (state.gen && p.gen !== +state.gen) return false;
+  if (state.type && !p.types.includes(state.type)) return false;
+  const raw = state.q.trim().replace(/^#/, "");
+  if (!raw) return true;
+  if (/^\d+$/.test(raw)) return String(p.num).startsWith(String(+raw)) || pad(p.num).startsWith(raw);
+  const q = norm(raw);
+  return p.keyFr.includes(q) || p.keyEn.includes(q);
+}
+function renderList() {
+  const [key, dir] = state.sort.split("-");
+  VISIBLE = ALL.filter(matches).sort((a, b) => {
+    let d = key === "num" ? a.num - b.num : key === "name" ? nameOf(a).localeCompare(nameOf(b), state.lang)
+      : key === "bst" ? a.bst - b.bst : a.stats[key] - b.stats[key];
+    if (dir === "desc") d = -d;
+    return d || a.num - b.num;
+  });
+  $("showing").textContent = T().showing(VISIBLE.length);
+  $("reset").hidden = !(state.gen || state.type || state.q || state.sort !== "num-asc");
+  $("list").innerHTML = VISIBLE.length ? VISIBLE.map(p => `<li><button class="row" type="button" data-num="${p.num}" ${p.num === state.current ? 'aria-current="true"' : ""}>
+      <span class="n">${pad(p.num)}</span><span class="ico">${img(p)}</span><span class="nm">${esc(nameOf(p))}</span>
+      <span class="dots">${p.types.map(t => `<i style="--c:${TYPES[t].col}" title="${typeName(t)}"></i>`).join("")}</span></button></li>`).join("")
+    : `<li class="empty">${T().noMatch}</li>`;
+}
+
+// ---------- Fiche ----------
+function effectiveness(types) {
+  const out = {};
+  for (const atk of Object.keys(TYPES)) {
+    let m = 1;
+    for (const def of types) { const v = dex.types.get(def).damageTaken[atk]; m *= v === 1 ? 2 : v === 2 ? .5 : v === 3 ? 0 : 1; }
+    out[atk] = m;
+  }
+  return out;
+}
+function evoStages(p) {
+  let root = p.raw;
+  while (root.prevo) root = dex.species.get(root.prevo);
+  const stages = [];
+  (function walk(s, d) {
+    if (!BY_EN.has(s.name)) return;
+    (stages[d] ||= []).push(BY_EN.get(s.name));
+    for (const e of s.evos || []) walk(dex.species.get(e), d + 1);
+  })(root, 0);
+  return stages;
+}
+function radarSVG(s, L) {
+  const order = ["hp", "atk", "def", "spe", "spd", "spa"], R = 92, C = 130, MAX = 200;
+  const pt = (i, r) => { const a = -Math.PI / 2 + i * Math.PI / 3; return [C + r * Math.cos(a), C + r * Math.sin(a)]; };
+  const poly = r => order.map((_, i) => pt(i, r).map(v => v.toFixed(1)).join(",")).join(" ");
+  const shape = order.map((k, i) => pt(i, Math.max(6, Math.min(s[k], MAX)) / MAX * R).map(v => v.toFixed(1)).join(",")).join(" ");
+  return `<svg class="radar" viewBox="0 0 260 260" role="img" aria-label="${order.map(k => `${L.stats[k]} ${s[k]}`).join(", ")}">
+    ${[.25, .5, .75, 1].map(f => `<polygon class="ring" points="${poly(R * f)}"/>`).join("")}
+    ${order.map((_, i) => { const [x, y] = pt(i, R); return `<line class="axis" x1="${C}" y1="${C}" x2="${x}" y2="${y}"/>`; }).join("")}
+    <polygon class="shape" points="${shape}"/>
+    ${order.map((k, i) => { const [x, y] = pt(i, R + 22); return `<text x="${x}" y="${y - 3}">${L.radar[k]}</text><text class="v" x="${x}" y="${y + 10}">${s[k]}</text>`; }).join("")}
+  </svg>`;
+}
+
+function show(num, { scroll = true } = {}) {
+  const p = BY_NUM.get(num); if (!p) return;
+  state.current = num;
+  const L = T(), t0 = TYPES[p.types[0]];
+  document.documentElement.style.setProperty("--h", t0.h);
+  document.documentElement.style.setProperty("--cc", Math.max(t0.c, .05));
+  document.querySelectorAll(".row[aria-current]").forEach(r => r.removeAttribute("aria-current"));
+  const row = $("list").querySelector(`.row[data-num="${num}"]`);
+  if (row) { row.setAttribute("aria-current", "true"); if (scroll) row.scrollIntoView({ block: "nearest" }); }
+
+  const idx = VISIBLE.indexOf(p), list = VISIBLE.length && idx >= 0 ? VISIBLE : ALL, i = list.indexOf(p);
+  const prev = list[i - 1], next = list[i + 1];
+  const eff = effectiveness(p.types);
+  const cls = m => m === 4 ? "w4" : m === 2 ? "w2" : m === 0 ? "im" : m < 1 ? "r" : "n";
+  const lbl = m => m === .5 ? "½" : m === .25 ? "¼" : String(m);
+  const weakCount = Object.values(eff).filter(m => m > 1).length;
+  const order = Object.keys(TYPES).sort((a, b) => eff[b] - eff[a]);
+  const stages = evoStages(p);
+
+  $("detail").innerHTML = `<div class="detail-inner">
+    <div class="bar-top">
+      <button class="nav-btn back" type="button" id="back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>${L.back}</button>
+      <span class="where">${L.regions[p.gen]} · Gen ${p.gen}</span>
+      <span class="spacer"></span>
+      <button class="nav-btn" type="button" id="prev" ${prev ? "" : "disabled"} aria-label="${L.prev}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg><span>${prev ? esc(nameOf(prev)) : ""}</span></button>
+      <button class="nav-btn" type="button" id="next" ${next ? "" : "disabled"} aria-label="${L.next}"><span>${next ? esc(nameOf(next)) : ""}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+    </div>
+    <div class="hero">
+      <div>
+        <div class="num" aria-hidden="true">${pad(p.num)}</div>
+        <h1>${esc(nameOf(p))}</h1>
+        <p class="alt">${esc(state.lang === "fr" ? p.en : p.fr)} · #${pad(p.num)}</p>
+        <div class="types">${p.types.map(t => `<span class="type" style="--c:${TYPES[t].col}">${typeName(t)}</span>`).join("")}</div>
+        <div class="facts">
+          <div><span>${L.bst}</span><b>${p.bst}</b></div>
+          <div><span>${L.gen}</span><b>${p.gen}</b></div>
+          <div><span>${L.matchups}</span><b>${weakCount} ×2+</b></div>
+        </div>
+      </div>
+      <div class="disc">${img(p, true)}</div>
+    </div>
+    <section>
+      <h3>${L.baseStats}<em>${L.total} ${p.bst}</em></h3>
+      <div class="two">
+        ${radarSVG(p.stats, L)}
+        <div class="stats">
+          ${Object.keys(L.stats).map(k => `<div class="stat"><span>${L.stats[k]}</span><b>${p.stats[k]}</b><span class="track"><i style="width:${Math.min(100, p.stats[k] / 200 * 100)}%"></i></span></div>`).join("")}
+        </div>
+      </div>
+    </section>
+    <section>
+      <h3>${L.matchups}</h3>
+      <div class="matrix">${order.map(t => `<div class="cell ${cls(eff[t])}"><span class="t"><i style="--c:${TYPES[t].col}"></i><span>${typeName(t)}</span></span><b>×${lbl(eff[t])}</b></div>`).join("")}</div>
+    </section>
+    ${stages.flat().length > 1 ? `<section><h3>${L.evo}</h3><div class="evo">
+      ${stages.map(st => `<div class="stage-col">${st.map(q => `<button type="button" data-num="${q.num}" ${q.num === p.num ? 'aria-current="true"' : ""}><span class="ico">${img(q)}</span>${esc(nameOf(q))}</button>`).join("")}</div>`).join('<span class="arrow" aria-hidden="true">→</span>')}
+    </div></section>` : ""}
+    <p class="note">${L.note}</p>
+  </div>`;
+  $("detail").scrollTop = 0;
+  $("back").onclick = () => $("app").classList.remove("open");
+  if (prev) $("prev").onclick = () => show(prev.num);
+  if (next) $("next").onclick = () => show(next.num);
+  $("detail").querySelectorAll(".evo button").forEach(b => b.onclick = () => show(+b.dataset.num));
+  try { history.replaceState(null, "", "#" + p.num); } catch {}
+}
+
+// ---------- Évènements ----------
+let tmr;
+$("q").addEventListener("input", e => { clearTimeout(tmr); tmr = setTimeout(() => { state.q = e.target.value; renderList(); }, 70); });
+$("q").addEventListener("keydown", e => {
+  if (e.key === "Enter" && VISIBLE[0]) { show(VISIBLE[0].num); $("app").classList.add("open"); }
+  if (e.key === "ArrowDown") { e.preventDefault(); $("list").querySelector(".row")?.focus(); }
+});
+$("list").addEventListener("click", e => { const r = e.target.closest(".row"); if (r) { show(+r.dataset.num, { scroll: false }); $("app").classList.add("open"); } });
+$("list").addEventListener("keydown", e => {
+  const r = e.target.closest(".row"); if (!r) return;
+  const li = r.parentElement;
+  const go = el => { const b = el?.querySelector(".row"); if (b) { e.preventDefault(); b.focus(); show(+b.dataset.num); } };
+  if (e.key === "ArrowDown") go(li.nextElementSibling);
+  if (e.key === "ArrowUp") go(li.previousElementSibling);
+});
+$("reset").onclick = () => {
+  Object.assign(state, { q: "", gen: "", type: "", sort: "num-asc" });
+  $("q").value = ""; buildControls(); renderList();
+};
+$("lang-btn").onclick = () => {
+  state.lang = state.lang === "fr" ? "en" : "fr"; store.set("lang", state.lang);
+  buildControls(); renderList(); if (state.current) show(state.current, { scroll: false });
+};
+$("theme-btn").onclick = () => {
+  const root = document.documentElement;
+  const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark";
+};
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); $("q").focus(); $("q").select(); return; }
+  if (e.target.closest("input, .dd")) return;
+  if (e.key === "ArrowRight") $("next")?.click();
+  if (e.key === "ArrowLeft") $("prev")?.click();
+  if (e.key === "Escape") $("app").classList.remove("open");
+});
+
+// ---------- Chargement ----------
+buildControls();
+$("status-text").textContent = T().loading;
+try {
+  const { Dex } = await import("https://cdn.jsdelivr.net/npm/@pkmn/dex@0.10.10/+esm");
+  dex = Dex.forGen(5);
+  ALL = dex.species.all()
+    .filter(s => s.num >= 1 && s.num <= 649 && !s.forme && !s.isNonstandard)
+    .sort((a, b) => a.num - b.num)
+    .map(s => {
+      const fr = FR_NAMES[s.num - 1] || s.name;
+      return { num: s.num, en: s.name, fr, keyEn: norm(s.name), keyFr: norm(fr), sprite: s.spriteid || norm(s.name),
+        types: s.types.filter(x => TYPES[x]), stats: s.baseStats,
+        bst: Object.values(s.baseStats).reduce((a, b) => a + b, 0), gen: genOf(s.num), raw: s };
+    });
+  ALL.forEach(p => { BY_EN.set(p.en, p); BY_NUM.set(p.num, p); });
+  renderList();
+  const h = +location.hash.slice(1);
+  show(BY_NUM.has(h) ? h : 6);
+} catch (err) {
+  console.error(err);
+  $("status-text").textContent = T().error;
+  document.querySelector(".spinner")?.remove();
+}
+</script>
+</body>
+</html>
