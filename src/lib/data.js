@@ -37,8 +37,8 @@ export const bst = p => STATS.reduce((a, k) => a + p.stats[k], 0);
 
 // Sprites Noir & Blanc de Pokémon Showdown
 const spriteId = p => norm(p.en.replace("♀", "f").replace("♂", "m"));
-export const spriteUrl = p => `https://play.pokemonshowdown.com/sprites/gen5/${spriteId(p)}.png`;
-export const spriteAniUrl = p => `https://play.pokemonshowdown.com/sprites/gen5ani/${spriteId(p)}.gif`;
+export const spriteUrl = (p, shiny = false) => `https://play.pokemonshowdown.com/sprites/gen5${shiny ? "-shiny" : ""}/${spriteId(p)}.png`;
+export const spriteAniUrl = (p, shiny = false) => `https://play.pokemonshowdown.com/sprites/gen5ani${shiny ? "-shiny" : ""}/${spriteId(p)}.gif`;
 
 for (const p of ALL) {
   p.bst = bst(p);

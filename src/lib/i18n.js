@@ -17,7 +17,7 @@ const fr = {
   tabDex: "Fiche", tabLocations: "Lieux", tabBreed: "Élevage",
   baseStats: "Stats de base", total: "Total", matchups: "Dégâts reçus", evo: "Évolutions", gen: "Génération", bst: "Total stats",
   evYield: "EV donnés", abilities: "Talents", hidden: "Caché", hiddenShort: "caché", tier: "Tier PvP", untiered: "Sans tier",
-  notObtainable: "Non obtenable dans PokeMMO", planBreed: "Planifier l'élevage", seeLocations: "Voir les lieux",
+  notObtainable: "Non obtenable dans PokeMMO", shinyBtn: "Voir le shiny", normalBtn: "Version normale", planBreed: "Planifier l'élevage", seeLocations: "Voir les lieux",
   note: "Stats, types, talents et lieux extraits du client PokeMMO.",
   evoHow: {
     LEVEL: v => `Niv. ${v}`, ITEM: (v, i) => i, TRADE: () => "Échange", TRADE_WITH_ITEM: (v, i) => `Échange avec ${i}`,
@@ -37,6 +37,7 @@ const fr = {
   rarities: { "Very Common": "Très commun", Common: "Commun", Uncommon: "Peu commun", Rare: "Rare", "Very Rare": "Très rare", Horde: "Horde", Lure: "Leurre", Special: "Spécial" },
   accessTitle: "Comment y aller", accessFrom: c => `Depuis le Centre Pokémon de ${c}`, accessIsCity: "C'est une ville : il y a un Centre Pokémon sur place.", ferryNote: "Une partie du trajet se fait en bateau.",
   mapTitle: "Carte", otherTimes: "Autres moments",
+  realMapTitle: "Vraie carte du jeu", realMapText: "Les cartes officielles sont sur les wikis Pokémon. Elles s'ouvrent dans un nouvel onglet.",
   locationPage: "Lieu", encountersHere: n => `${n} Pokémon dans ce lieu`, byMethod: "Par méthode", unknownLocation: "Ce lieu n'existe pas.",
 
   // Élevage
@@ -109,7 +110,7 @@ const en = {
   tabDex: "Overview", tabLocations: "Locations", tabBreed: "Breeding",
   baseStats: "Base stats", total: "Total", matchups: "Damage taken", evo: "Evolutions", gen: "Generation", bst: "Stat total",
   evYield: "EV yield", abilities: "Abilities", hidden: "Hidden", hiddenShort: "hidden", tier: "PvP tier", untiered: "Untiered",
-  notObtainable: "Not obtainable in PokeMMO", planBreed: "Plan breeding", seeLocations: "See locations",
+  notObtainable: "Not obtainable in PokeMMO", shinyBtn: "See shiny", normalBtn: "Normal version", planBreed: "Plan breeding", seeLocations: "See locations",
   note: "Stats, types, abilities and locations extracted from the PokeMMO client.",
   evoHow: {
     LEVEL: v => `Lv. ${v}`, ITEM: (v, i) => i, TRADE: () => "Trade", TRADE_WITH_ITEM: (v, i) => `Trade holding ${i}`,
@@ -128,6 +129,7 @@ const en = {
   rarities: { "Very Common": "Very common", Common: "Common", Uncommon: "Uncommon", Rare: "Rare", "Very Rare": "Very rare", Horde: "Horde", Lure: "Lure", Special: "Special" },
   accessTitle: "How to get there", accessFrom: c => `From the Pokémon Center in ${c}`, accessIsCity: "This is a town: there's a Pokémon Center right here.", ferryNote: "Part of the trip is by boat.",
   mapTitle: "Map", otherTimes: "Other times",
+  realMapTitle: "Real in-game map", realMapText: "The official maps are on the Pokémon wikis. They open in a new tab.",
   locationPage: "Location", encountersHere: n => `${n} Pokémon here`, byMethod: "By method", unknownLocation: "This location doesn't exist.",
 
   breedTitle: "Breed", eggOf: "Egg:", eggGroups: "Egg groups", genderless: "Genderless", maleOnly: "Male only", femaleOnly: "Female only",

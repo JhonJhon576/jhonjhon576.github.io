@@ -7,6 +7,20 @@ import { RarityChip } from "./LocationsTab.jsx";
 import RegionMap, { BASE_INDEX, MapLegend, placeName } from "../components/RegionMap.jsx";
 import { REGION_MAPS, accessPath, baseName } from "../data/maps.js";
 
+// Liens vers la page du lieu sur Poképédia (FR) et Bulbapedia (EN), qui montrent la vraie carte du jeu.
+// On ne copie pas leurs images : on y renvoie.
+const REGION_FR = ["Kanto", "Johto", "Hoenn", "Sinnoh", "Unys"];
+const REGION_EN = ["Kanto", "Johto", "Hoenn", "Sinnoh", "Unova"];
+function wikiLinks(loc) {
+  const en = baseName(loc.en), fr = baseName(loc.fr);
+  const route = en.match(/^Route (\d+)$/);
+  const q = route ? { fr: `Route ${route[1]} (${REGION_FR[loc.region]})`, en: `${REGION_EN[loc.region]} Route ${route[1]}` } : { fr, en: en.replace(/ Of /g, " of ") };
+  return {
+    pokepedia: `https://www.pokepedia.fr/index.php?search=${encodeURIComponent(q.fr)}&go=Lire`,
+    bulbapedia: `https://bulbapedia.bulbagarden.net/w/index.php?search=${encodeURIComponent(q.en)}&go=Go`,
+  };
+}
+
 // Carte de la région avec le lieu, et le chemin depuis le Centre Pokémon le plus proche
 function AccessMap({ locKey, loc }) {
   const { lang, t } = useLang();
@@ -51,6 +65,23 @@ function AccessMap({ locKey, loc }) {
               {ferry && <p className="mt-2 text-[0.8rem] text-faint">{t.ferryNote}</p>}
             </>
           )}
+        </div>
+        <div className="rounded-2xl border border-line bg-panel p-4">
+          <h2 className="eyebrow mb-2">{t.realMapTitle}</h2>
+          <p className="mb-3 text-[0.84rem] text-muted">{t.realMapText}</p>
+          <div className="flex flex-wrap gap-2">
+            {(lang === "fr" ? ["pokepedia", "bulbapedia"] : ["bulbapedia", "pokepedia"]).map((k, i) => (
+              <a
+                key={k}
+                href={wikiLinks(loc)[k]}
+                target="_blank"
+                rel="noreferrer"
+                className={`inline-flex h-9 items-center gap-1.5 rounded-[10px] px-3 text-[0.84rem] ${i === 0 ? "bg-fg font-medium text-bg hover:bg-accent-ink" : "border border-line text-fg hover:border-accent"}`}
+              >
+                {k === "pokepedia" ? "Poképédia" : "Bulbapedia"} <span aria-hidden="true">↗</span>
+              </a>
+            ))}
+          </div>
         </div>
         {variants.length > 0 && (
           <div className="rounded-2xl border border-line bg-panel p-4">

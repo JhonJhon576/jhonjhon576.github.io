@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { STATS, TYPES, effectiveness, evoStages, pad } from "../lib/data.js";
 import { abilName } from "../lib/breeding.js";
 import { nameOf, useLang } from "../lib/i18n.js";
@@ -71,6 +71,7 @@ export default function PokemonPage({ p, tab, prev, next }) {
 
 function Overview({ p }) {
   const { lang, t } = useLang();
+  const [shiny, setShiny] = useState(false);
   const eff = effectiveness(p.types);
   const order = Object.keys(TYPES).sort((a, b) => eff[b] - eff[a]);
   const weak = Object.values(eff).filter(m => m > 1).length;
@@ -109,7 +110,17 @@ function Overview({ p }) {
         </div>
         <div className="disc-bg relative grid aspect-square max-w-full place-items-center rounded-full max-[860px]:order-first max-[860px]:mx-auto max-[860px]:w-[min(260px,70vw)]">
           <span className="absolute inset-[8%] rounded-full border border-dashed" style={{ borderColor: "color-mix(in oklab, var(--accent) 35%, transparent)" }} />
-          <Sprite key={p.id} p={p} animated className="anim-rise relative z-[1] h-[62%] w-[62%]" fallbackClass="size-[34%]" />
+          <Sprite key={p.id + (shiny ? "s" : "")} p={p} animated shiny={shiny} className="anim-rise relative z-[1] h-[62%] w-[62%]" fallbackClass="size-[34%]" />
+          <button
+            type="button"
+            aria-pressed={shiny}
+            onClick={() => setShiny(s => !s)}
+            className={`absolute bottom-[6%] left-1/2 z-[2] inline-flex h-9 whitespace-nowrap -translate-x-1/2 items-center gap-1.5 rounded-full border px-3.5 text-[0.84rem] font-medium shadow-soft transition-colors ${
+              shiny ? "border-transparent bg-[oklch(0.82_0.14_85)] text-[oklch(0.3_0.08_70)]" : "border-line bg-panel text-muted hover:text-fg"
+            }`}
+          >
+            {Icon.sparkle}{shiny ? t.normalBtn : t.shinyBtn}
+          </button>
         </div>
       </div>
 
