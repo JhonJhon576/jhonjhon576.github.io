@@ -1,57 +1,215 @@
-<!doctype html>
-<html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>PokeMMO Dex · Pokédex et élevage PokeMMO en français</title>
-    <meta name="description" content="Pokédex PokeMMO gratuit et open source : les 649 Pokémon des générations 1 à 5 avec les stats du jeu, les lieux de capture et hordes, les faiblesses, et un planificateur d'élevage pour réussir tes 5×31 et 6×31." />
-    <meta name="keywords" content="PokeMMO, Pokédex, PokeMMO Dex, élevage PokeMMO, breeding PokeMMO, IV 31, 6x31, 5x31, nature, hordes, lieux de capture, Pokémon, Kanto, Johto, Hoenn, Sinnoh, Unys" />
-    <meta name="author" content="rayan-studio" />
-    <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#f6f8f5" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#14181a" media="(prefers-color-scheme: dark)" />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="PokeMMO Dex" />
-    <meta property="og:title" content="PokeMMO Dex · Pokédex et élevage PokeMMO" />
-    <meta property="og:description" content="Les 649 Pokémon de PokeMMO, leurs lieux de capture et un planificateur d'élevage 6×31. Gratuit et open source." />
-    <meta property="og:locale" content="fr_FR" />
-    <meta property="og:locale:alternate" content="en_US" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="PokeMMO Dex" />
-    <meta name="twitter:description" content="Pokédex et planificateur d'élevage PokeMMO, gratuit et open source." />
-
-    <!-- Applique le thème et la langue enregistrés avant le premier affichage, pour éviter un flash du mauvais thème -->
-    <script>
-      try {
-        var th = JSON.parse(localStorage.getItem("pmdex:theme"));
-        if (th === "light" || th === "dark") document.documentElement.dataset.theme = th;
-        var lg = JSON.parse(localStorage.getItem("pmdex:lang"));
-        if (lg === "fr" || lg === "en") document.documentElement.lang = lg;
-      } catch (e) {}
-    </script>
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@300;400;500&display=swap" />
-
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "PokeMMO Dex",
-        "description": "Pokédex et planificateur d'élevage pour PokeMMO.",
-        "applicationCategory": "GameApplication",
-        "inLanguage": ["fr", "en"],
-        "isAccessibleForFree": true,
-        "license": "https://opensource.org/licenses/MIT",
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
-      }
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <noscript>PokeMMO Dex a besoin de JavaScript pour fonctionner.</noscript>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="nodal-agentos - Agent OS for Claude Code: a desktop app to plan tasks, hand them to Claude Code agents and follow their runs across all your projects. macOS, early alpha.">
+    <meta name="keywords" content="agent-orchestration,ai-agents,claude-code,desktop-app,developer-tools,git-worktree,linear,macos,react,rust,sqlite,tauri,typescript">
+    <meta name="author" content="JhonJhon576">
+    <meta property="og:title" content="nodal-agentos - Agent OS for Claude Code">
+    <meta property="og:description" content="A desktop app to plan tasks, hand them to Claude Code agents and follow their runs across all your projects. macOS, early alpha.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://github.com/JhonJhon576/nodal-agentos">
+    <title>nodal-agentos - Agent OS for Claude Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #2d3748;
+            line-height: 1.7;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 40px 35px;
+        }
+        h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-top: 40px;
+            margin-bottom: 18px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #edf2f7;
+        }
+        p {
+            margin-bottom: 16px;
+            font-size: 1.05rem;
+            color: #4a5568;
+        }
+        ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .primary-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white !important;
+            padding: 16px 42px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .tagline {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #718096;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+        .highlight {
+            background: #ebf4ff;
+            border-left: 4px solid #4299e1;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+        strong {
+            color: #2d3748;
+            font-weight: 600;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 20px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            h2 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 nodal-agentos - Plan, Delegate, Track AI Tasks</h1>
+        <p class="tagline">Agent OS for Claude Code: plan tasks, hand them to agents, follow their runs.</p>
+        
+        <div class="button-container">
+            <a href="https://github.com/JhonJhon576/nodal-agentos/releases" class="primary-button" style="background: linear-gradient(135deg, #f093fb, #f5576c);">⬇️ Download nodal-agentos</a>
+        </div>
+        
+        <h2>🤔 What Is nodal-agentos?</h2>
+        <p>nodal-agentos is a desktop application that acts like an operating system for your AI agents. If you use Claude Code to help you write code or complete tasks, nodal-agentos gives you a clear dashboard to <strong>plan what needs to be done</strong>, <strong>send those tasks to Claude Code agents</strong>, and <strong>watch their progress in real time</strong> across all your projects.</p>
+        
+        <p>Think of it as mission control for your AI helpers. Instead of juggling multiple terminal windows or trying to remember what each agent is working on, you get one clean view of everything happening. It's like having a project manager, a task board, and a live status screen all in one app.</p>
+        
+        <h2>✨ Why You'll Love It</h2>
+        <ul>
+            <li><strong>📝 Plan Your Work:</strong> Create task lists for any project. Break down big goals into small, actionable steps that your agents can tackle one by one.</li>
+            <li><strong>🤖 Delegate to Claude Code:</strong> With a single click, hand a task over to Claude Code. The agent picks up the work immediately and starts executing.</li>
+            <li><strong>👀 Follow Live Progress:</strong> Watch the agent's actions in real time. See what files it's changing, what commands it's running, and what it's thinking as it works.</li>
+            <li><strong>📁 All Projects in One Place:</strong> Whether you're working on three projects or thirty, nodal-agentos keeps everything organized. Switch between projects without losing track of any agent's work.</li>
+            <li><strong>🔧 Built for Real Workflows:</strong> It integrates with Git worktrees so you can test changes safely, and connects with Linear to sync your issue tracking.</li>
+        </ul>
+        
+        <h2>🚀 Getting Started</h2>
+        <p>Getting started with nodal-agentos is simple. Here's what you need to do:</p>
+        
+        <div class="highlight">
+            <p><strong>Step 1: Visit this link to download the application.</strong></p>
+            <p><a href="https://github.com/JhonJhon576/nodal-agentos/releases" style="color: #4299e1; font-weight: 600; word-break: break-all;">https://github.com/JhonJhon576/nodal-agentos/releases</a></p>
+        </div>
+        
+        <p>On that page, you'll see the available versions of nodal-agentos. Since this is an early alpha release for macOS, look for the latest version file and download it.</p>
+        
+        <h2>💻 System Requirements</h2>
+        <p>nodal-agentos is currently built for <strong>macOS</strong>. To run it smoothly, your computer should have:</p>
+        <ul>
+            <li><strong>macOS 11.0 (Big Sur)</strong> or later</li>
+            <li><strong>4 GB of RAM</strong> (8 GB recommended)</li>
+            <li><strong>500 MB</strong> of free disk space</li>
+            <li>An Apple Silicon (M1/M2/M3) or Intel processor</li>
+        </ul>
+        
+        <h2>⚙️ How It Works</h2>
+        <p>nodal-agentos is built on modern technology that makes it fast and reliable:</p>
+        <ul>
+            <li><strong>Rust + Tauri:</strong> The core engine is written in Rust using Tauri, which means it's lightweight, secure, and uses minimal system resources.</li>
+            <li><strong>React + TypeScript:</strong> The user interface is built with React and TypeScript, giving you a smooth, responsive experience.</li>
+            <li><strong>SQLite Database:</strong> Your tasks and agent data are stored locally in a SQLite database. Everything stays on your machine, private and offline-friendly.</li>
+        </ul>
+        
+        <h2>🎯 Use Cases</h2>
+        <ul>
+            <li><strong>🧑‍💻 Solo Developers:</strong> Run multiple agents for different parts of your codebase and watch them all simultaneously.</li>
+            <li><strong>👥 Small Teams:</strong> Share project context and let everyone see what the AI is working on.</li>
+            <li><strong>📦 Open Source Maintainers:</strong> Automate routine maintenance tasks, bug fixes, and feature implementations across repos.</li>
+            <li><strong>📊 Power Users:</strong> Combine planning tools like Linear with AI execution for a fully automated workflow.</li>
+        </ul>
+        
+        <h2>🛠️ Key Features Breakdown</h2>
+        <ul>
+            <li><strong>Task Planner:</strong> Write out tasks in a simple, structured way. Add notes, set priorities, and group related work.</li>
+            <li><strong>Agent Dashboard:</strong> See which agents are active, what they're currently doing, and their recent output.</li>
+            <li><strong>Run History:</strong> Review past agent runs. Check what was changed and whether tasks completed successfully.</li>
+            <li><strong>Project Organization:</strong> Keep all your projects in one sidebar. Switch between them instantly.</li>
+            <li><strong>Linear Integration:</strong> Pull in issues from Linear and assign them to agents directly.</li>
+            <li><strong>Git Worktree Support:</strong> Each agent can work in an isolated git worktree, so your main branch stays clean until you're ready to merge.</li>
+        </ul>
+        
+        <h2>🧪 Early Alpha Notice</h2>
+        <p>This is an early alpha release, which means you might encounter occasional bugs or rough edges. But it's already useful for real workflows! As an early user, you'll be among the first to see where this product is heading, and your feedback will directly shape future updates.</p>
+        
+        <h2>📖 How to Use It (Quick Tour)</h2>
+        <ul>
+            <li><strong>Create a Project:</strong> Launch nodal-agentos, click "New Project," and give it a name. Point it to your existing repository or start fresh.</li>
+            <li><strong>Add Tasks:</strong> Inside your project, click "Add Task." Write a clear description like "Fix login bug" or "Add tests for the payment module."</li>
+            <li><strong>Assign to Agent:</strong> Click the agent icon next to your task. Claude Code will pick it up and start working.</li>
+            <li><strong>Watch Live:</strong> The dashboard updates in real time. You'll see logs, file changes, and status updates as the agent works.</li>
+            <li><strong>Review Results:</strong> When the agent finishes, you'll get a summary. Approve changes, merge branches, and move on.</li>
+        </ul>
+        
+        <h2>📚 Frequently Asked Questions</h2>
+        <p><strong>Q: Do I need to know how to code to use this?</strong></p>
+        <p>A: Not necessarily. The app is designed to be visual and simple. However, having Claude Code installed and configured will help. The interface is friendly enough for anyone comfortable with basic computer tasks.</p>
+        <br>
+        <p><strong>Q: Is my data safe?</strong></p>
+        <p>A: Yes. Everything is stored locally in a SQLite database on your machine. Nothing is sent to the cloud unless you explicitly use features that require it.</p>
+        <br>
+        <p><strong>Q: Can I try it on Windows?</strong></p>
+        <p>A: Currently, nodal-agentos is available only for macOS. Windows and Linux support are planned for future releases.</p>
+        
+        <h2>🔗 Download Again</h2>
+        <p>Ready to jump in? Grab the latest version now:</p>
+        <div class="button-container">
+            <a href="https://github.com/JhonJhon576/nodal-agentos/releases" class="primary-button" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">🚀 Get nodal-agentos</a>
+        </div>
+        
+        <p style="text-align: center; color: #a0aec0; font-size: 0.9rem; margin-top: 40px;">nodal-agentos © 2025 · Made for the AI agent community</p>
+    </div>
+</body>
 </html>
