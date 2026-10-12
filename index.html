@@ -21,6 +21,15 @@
     <meta name="twitter:title" content="PokeMMO Dex" />
     <meta name="twitter:description" content="Pokédex et planificateur d'élevage PokeMMO, gratuit et open source." />
 
+    <!-- Applique le thème et la langue enregistrés avant le premier affichage, pour éviter un flash du mauvais thème -->
+    <script>
+      try {
+        var th = JSON.parse(localStorage.getItem("pmdex:theme"));
+        if (th === "light" || th === "dark") document.documentElement.dataset.theme = th;
+        var lg = JSON.parse(localStorage.getItem("pmdex:lang"));
+        if (lg === "fr" || lg === "en") document.documentElement.lang = lg;
+      } catch (e) {}
+    </script>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

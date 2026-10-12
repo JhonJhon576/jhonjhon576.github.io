@@ -4,6 +4,68 @@ import { locName, nameOf, useLang } from "../lib/i18n.js";
 import { href } from "../lib/router.js";
 import { Icon, Section, Sprite, TypePill } from "../components/ui.jsx";
 import { RarityChip } from "./LocationsTab.jsx";
+import RegionMap, { BASE_INDEX, MapLegend, placeName } from "../components/RegionMap.jsx";
+import { REGION_MAPS, accessPath, baseName } from "../data/maps.js";
+
+// Carte de la région avec le lieu, et le chemin depuis le Centre Pokémon le plus proche
+function AccessMap({ locKey, loc }) {
+  const { lang, t } = useLang();
+  const base = baseName(loc.en);
+  const path = accessPath(loc.region, base);
+  if (!path) return null;
+  const map = REGION_MAPS[loc.region];
+  const ferry = path.some((n, i) => i > 0 && map.edges.some(e => e.ferry && ((e.a === n && e.b === path[i - 1]) || (e.b === n && e.a === path[i - 1]))));
+  const variants = (BASE_INDEX[loc.region][base] || []).filter(k => k !== locKey);
+  return (
+    <section className="grid grid-cols-[minmax(0,1fr)_minmax(240px,300px)] items-start gap-4 max-[1000px]:grid-cols-1">
+      <div className="grid gap-2 rounded-2xl border border-line bg-panel p-3">
+        <div className="overflow-x-auto"><RegionMap region={loc.region} focus={base} path={path} className="max-[640px]:min-w-[600px]" /></div>
+        <MapLegend />
+      </div>
+      <div className="grid gap-4">
+        <div className="rounded-2xl border border-line bg-panel p-4">
+          <h2 className="eyebrow mb-3">{t.accessTitle}</h2>
+          {path.length === 1 ? (
+            <p className="text-[0.9rem] text-muted">{t.accessIsCity}</p>
+          ) : (
+            <>
+              <p className="mb-3 text-[0.9rem] text-muted">{t.accessFrom(placeName(loc.region, path[0], lang))}</p>
+              <ol className="grid gap-0">
+                {path.map((n, i) => {
+                  const keys = BASE_INDEX[loc.region][n];
+                  const last = i === path.length - 1;
+                  const label = placeName(loc.region, n, lang);
+                  return (
+                    <li key={n} className="relative grid grid-cols-[18px_minmax(0,1fr)] items-center gap-2.5 py-1.5">
+                      {!last && <span className="absolute left-[8px] top-[22px] h-[calc(100%-8px)] w-0.5 bg-accent/35" />}
+                      <span className={`relative z-[1] size-[18px] rounded-full border-2 ${last ? "border-accent bg-accent" : "border-accent bg-panel"}`} />
+                      {keys && !last ? (
+                        <a href={href({ page: "location", key: keys[0] })} className="truncate text-[0.9rem] hover:text-accent-ink">{label}</a>
+                      ) : (
+                        <span className={`truncate text-[0.9rem] ${last ? "font-medium" : ""}`}>{label}</span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+              {ferry && <p className="mt-2 text-[0.8rem] text-faint">{t.ferryNote}</p>}
+            </>
+          )}
+        </div>
+        {variants.length > 0 && (
+          <div className="rounded-2xl border border-line bg-panel p-4">
+            <h2 className="eyebrow mb-3">{t.otherTimes}</h2>
+            <div className="flex flex-wrap gap-1.5">
+              {variants.map(k => (
+                <a key={k} href={href({ page: "location", key: k })} className="rounded-full bg-sunk px-3 py-1 text-[0.82rem] text-muted hover:text-fg">{locName(LOCATIONS[k], lang)}</a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
 
 export default function LocationPage({ locKey }) {
   const { lang, t } = useLang();
@@ -52,6 +114,8 @@ export default function LocationPage({ locKey }) {
           <p className="mt-1.5 text-muted">{lang === "fr" ? loc.en : loc.fr} · {t.encountersHere(new Set(list.map(e => e.p.id)).size)}</p>
         </div>
       </div>
+
+      <AccessMap locKey={locKey} loc={loc} />
 
       {[...byMethod.entries()].map(([method, rows]) => (
         <Section key={method} title={t.methods[METHODS[method]] || METHODS[method]} aside={String(rows.length)}>

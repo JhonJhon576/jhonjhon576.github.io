@@ -35,6 +35,8 @@ const fr = {
   levels: (a, b) => (a === b ? `Niv. ${a}` : `Niv. ${a}–${b}`), openLocation: "Ouvrir le lieu", hordeHint: "Horde : 5 Pokémon d'un coup, idéal pour les EV et les IV à 31.",
   methods: { Grass: "Herbes", "Dark Grass": "Hautes herbes", Cave: "Grotte", Inside: "Intérieur", Headbutt: "Coup d'Boule", Water: "Surf", "Old Rod": "Canne", "Good Rod": "Super Canne", "Super Rod": "Méga Canne", Fishing: "Pêche", Shadow: "Ombre", "Honey Tree": "Arbre à miel", Rocks: "Éclate-Roc", "Dust Cloud": "Nuage de poussière" },
   rarities: { "Very Common": "Très commun", Common: "Commun", Uncommon: "Peu commun", Rare: "Rare", "Very Rare": "Très rare", Horde: "Horde", Lure: "Leurre", Special: "Spécial" },
+  accessTitle: "Comment y aller", accessFrom: c => `Depuis le Centre Pokémon de ${c}`, accessIsCity: "C'est une ville : il y a un Centre Pokémon sur place.", ferryNote: "Une partie du trajet se fait en bateau.",
+  mapTitle: "Carte", otherTimes: "Autres moments",
   locationPage: "Lieu", encountersHere: n => `${n} Pokémon dans ce lieu`, byMethod: "Par méthode", unknownLocation: "Ce lieu n'existe pas.",
 
   // Élevage
@@ -124,6 +126,8 @@ const en = {
   levels: (a, b) => (a === b ? `Lv. ${a}` : `Lv. ${a}–${b}`), openLocation: "Open location", hordeHint: "Horde: 5 Pokémon at once, great for EVs and 31 IVs.",
   methods: { Grass: "Grass", "Dark Grass": "Dark grass", Cave: "Cave", Inside: "Inside", Headbutt: "Headbutt", Water: "Surf", "Old Rod": "Old Rod", "Good Rod": "Good Rod", "Super Rod": "Super Rod", Fishing: "Fishing", Shadow: "Shadow", "Honey Tree": "Honey tree", Rocks: "Rock Smash", "Dust Cloud": "Dust cloud" },
   rarities: { "Very Common": "Very common", Common: "Common", Uncommon: "Uncommon", Rare: "Rare", "Very Rare": "Very rare", Horde: "Horde", Lure: "Lure", Special: "Special" },
+  accessTitle: "How to get there", accessFrom: c => `From the Pokémon Center in ${c}`, accessIsCity: "This is a town: there's a Pokémon Center right here.", ferryNote: "Part of the trip is by boat.",
+  mapTitle: "Map", otherTimes: "Other times",
   locationPage: "Location", encountersHere: n => `${n} Pokémon here`, byMethod: "By method", unknownLocation: "This location doesn't exist.",
 
   breedTitle: "Breed", eggOf: "Egg:", eggGroups: "Egg groups", genderless: "Genderless", maleOnly: "Male only", femaleOnly: "Female only",

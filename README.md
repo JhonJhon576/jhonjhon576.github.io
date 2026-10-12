@@ -4,6 +4,7 @@ Pokédex et planificateur d'élevage pour **PokeMMO**, en français et en anglai
 
 - Les 649 Pokémon des générations 1 à 5 avec les **stats, types et talents du client PokeMMO**
 - **Lieux de capture** par région : méthode (herbes, surf, cannes…), rareté, hordes et niveaux, avec une page pour chaque lieu
+- **Cartes des régions** (schémas dessinés pour le site) : le lieu mis en avant et le chemin depuis le Centre Pokémon le plus proche
 - **Planificateur d'élevage** : nature et talent conseillés, IV utiles, arbre de reproduction équilibré, liste des Pokémon de base à réunir, objets et coût estimé
 - Faiblesses (table des types Gen 5, sans Fée), évolutions, tiers PvP, EV donnés
 - Recherche par nom FR ou EN, avec ou sans accents, ou par numéro (`94`, `094`, `#94`)
@@ -48,6 +49,7 @@ src/
   lib/        données, élevage (arbre, conseils), traductions, routeur, stockage local
   components/ barre latérale, menus déroulants, sprites
   pages/      fiche, lieux, page d'un lieu, élevage, pages légales
+src/data/maps.js  schémas des 5 régions (lieux, coordonnées, liaisons)
 scripts/      génération des données
 ```
 
