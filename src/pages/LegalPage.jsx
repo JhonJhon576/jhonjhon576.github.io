@@ -114,11 +114,12 @@ const PAGES = {
           <p>Pour retenir tes réglages, le site enregistre quelques préférences dans le stockage local de ton navigateur (localStorage). Elles ne quittent jamais ton appareil et personne d'autre n'y a accès :</p>
           <StorageList lang={lang} />
           <h2>Services tiers contactés par ton navigateur</h2>
-          <p>Pour afficher la page, ton navigateur se connecte à trois services. Comme pour tout site web, ils reçoivent ton adresse IP et des informations techniques (navigateur, page demandée) :</p>
+          <p>Pour afficher la page, ton navigateur se connecte à ces services. Comme pour tout site web, ils reçoivent ton adresse IP et des informations techniques (navigateur, page demandée) :</p>
           <ul>
             <li><strong>GitHub Pages</strong> (hébergement) : {ext("https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement", "déclaration de confidentialité de GitHub")}.</li>
             <li><strong>Google Fonts</strong> (polices Geist et Geist Mono) : {ext("https://policies.google.com/privacy", "règles de confidentialité de Google")}.</li>
             <li><strong>Pokémon Showdown</strong> (images des Pokémon) : {ext("https://pokemonshowdown.com/privacy", "politique de Pokémon Showdown")}.</li>
+            <li><strong>YouTube</strong> (miniatures de la page Tutoriels, chargées seulement sur cette page ; les vidéos s'ouvrent sur YouTube) : {ext("https://policies.google.com/privacy", "règles de confidentialité de Google")}.</li>
           </ul>
           <h2>Tes droits</h2>
           <p>Comme le site ne détient aucune donnée sur toi, il n'y a rien à consulter ou à supprimer de notre côté. Tu peux effacer tes préférences locales à tout moment depuis la page {<a href="#/cookies">Cookies</a>}. Pour toute question, ouvre une {ext(REPO + "/issues", "issue sur GitHub")}. Tu peux aussi contacter l'autorité de protection des données de ton pays (la CNIL en France, l'APD en Belgique).</p>
@@ -134,11 +135,12 @@ const PAGES = {
           <p>To remember your settings, the site saves a few preferences in your browser's local storage (localStorage). They never leave your device and nobody else can see them:</p>
           <StorageList lang={lang} />
           <h2>Third-party services your browser contacts</h2>
-          <p>To show the page, your browser connects to three services. As with any website, they receive your IP address and technical details (browser, requested page):</p>
+          <p>To show the page, your browser connects to these services. As with any website, they receive your IP address and technical details (browser, requested page):</p>
           <ul>
             <li><strong>GitHub Pages</strong> (hosting): {ext("https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement", "GitHub privacy statement")}.</li>
             <li><strong>Google Fonts</strong> (Geist and Geist Mono fonts): {ext("https://policies.google.com/privacy", "Google privacy policy")}.</li>
             <li><strong>Pokémon Showdown</strong> (Pokémon images): {ext("https://pokemonshowdown.com/privacy", "Pokémon Showdown policy")}.</li>
+            <li><strong>YouTube</strong> (thumbnails on the Tutorials page, loaded only there; videos open on YouTube): {ext("https://policies.google.com/privacy", "Google privacy policy")}.</li>
           </ul>
           <h2>Your rights</h2>
           <p>Since the site holds no data about you, there is nothing to access or delete on our side. You can clear your local preferences at any time from the {<a href="#/cookies">Cookies</a>} page. For any question, open a {ext(REPO + "/issues", "GitHub issue")}. You can also contact your country's data protection authority.</p>

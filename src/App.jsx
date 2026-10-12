@@ -7,6 +7,7 @@ import Sidebar from "./components/Sidebar.jsx";
 import PokemonPage from "./pages/PokemonPage.jsx";
 import LocationPage from "./pages/LocationPage.jsx";
 import LegalPage from "./pages/LegalPage.jsx";
+import TutorialsPage from "./pages/TutorialsPage.jsx";
 
 const DEFAULT_ID = 6;
 
@@ -66,6 +67,7 @@ export default function App() {
   else if (pokemon) main = <PokemonPage p={pokemon} tab={route.tab || "fiche"} prev={list[i - 1]} next={list[i + 1]} />;
   else if (route.page === "location") main = <LocationPage locKey={route.key} />;
   else if (route.page === "legal") main = <LegalPage slug={route.slug} />;
+  else if (route.page === "tutorials") main = <TutorialsPage />;
   else main = <NotFound />;
 
   // Remonte en haut à chaque changement de page
@@ -75,7 +77,7 @@ export default function App() {
   return (
     <LangContext.Provider value={{ lang, t, setLang }}>
       <div className="grid h-full grid-cols-[minmax(300px,380px)_minmax(0,1fr)] max-[860px]:grid-cols-1">
-        <Sidebar filters={filters} setFilters={setFilters} visible={visible} currentId={pokemon?.id} onToggleTheme={toggleTheme} />
+        <Sidebar filters={filters} setFilters={setFilters} visible={visible} currentId={pokemon?.id} onToggleTheme={toggleTheme} route={route} />
         <main
           id="main"
           className={`min-h-0 overflow-y-auto max-[860px]:fixed max-[860px]:inset-0 max-[860px]:z-20 max-[860px]:bg-bg max-[860px]:pb-[env(safe-area-inset-bottom)] max-[860px]:pt-[env(safe-area-inset-top)] max-[860px]:transition-transform max-[860px]:duration-300 ${

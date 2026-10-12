@@ -6,7 +6,7 @@ import { Dropdown, Icon, Sprite } from "./ui.jsx";
 
 export const REPO = "https://github.com/rayan-studio/PokeMmoDex";
 
-export default function Sidebar({ filters, setFilters, visible, currentId, onToggleTheme }) {
+export default function Sidebar({ filters, setFilters, visible, currentId, onToggleTheme, route }) {
   const { lang, t, setLang } = useLang();
   const listRef = useRef(null);
   const searchRef = useRef(null);
@@ -143,7 +143,20 @@ export default function Sidebar({ filters, setFilters, visible, currentId, onTog
         )}
       </ul>
 
-      <footer className="border-t border-line px-[18px] py-3 text-[0.74rem] text-faint">
+      <div className="border-t border-line px-2 pt-2">
+        <a
+          href="#/tutoriels"
+          aria-current={route?.page === "tutorials" ? "page" : undefined}
+          className={`flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-[0.92rem] ${route?.page === "tutorials" ? "bg-accent-soft font-medium text-accent-ink" : "hover:bg-sunk"}`}
+        >
+          <span className="grid size-7 place-items-center rounded-lg bg-[oklch(0.58_0.21_27)] text-white">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+          </span>
+          <span className="flex-1">{t.tutoTitle}</span>
+          <span className="text-[0.74rem] text-faint">{t.tutoSub}</span>
+        </a>
+      </div>
+      <footer className="px-[18px] pb-3 pt-2 text-[0.74rem] text-faint">
         <nav className="flex flex-wrap gap-x-3 gap-y-1">
           <a className="hover:text-fg" href="#/a-propos">{t.footer.about}</a>
           <a className="hover:text-fg" href="#/mentions-legales">{t.footer.legal}</a>

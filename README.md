@@ -6,6 +6,7 @@ Pokédex et planificateur d'élevage pour **PokeMMO**, en français et en anglai
 - **Lieux de capture** par région : méthode (herbes, surf, cannes…), rareté, hordes et niveaux, avec une page pour chaque lieu
 - **Cartes des régions** (schémas dessinés pour le site) : le lieu mis en avant et le chemin depuis le Centre Pokémon le plus proche
 - **Planificateur d'élevage** : tu saisis les Pokémon que tu as déjà (IV, nature, talent, genre) et le plan part de là. Étapes à faire dans l'ordre, bouton « Fait » qui met ta boîte à jour, nature et talent conseillés, liste des Pokémon à trouver, objets et coût estimé
+- **Tutoriels** : vidéos YouTube classées par thème (débuter, argent, revanches d'arène, Ho-Oh et Red, élevage), liste dans `src/data/tutorials.js`
 - Faiblesses (table des types Gen 5, sans Fée), évolutions, tiers PvP, EV donnés
 - Recherche par nom FR ou EN, avec ou sans accents, ou par numéro (`94`, `094`, `#94`)
 - Clavier : `Ctrl K` pour chercher, `↑` `↓` dans la liste, `←` `→` pour changer de Pokémon

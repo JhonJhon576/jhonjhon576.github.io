@@ -97,6 +97,9 @@ const fr = {
   ],
 
   // Pied de page et pages
+  tutoTitle: "Tutoriels", tutoSub: "vidéos", tutoTopics: "Thèmes", tutoAll: "Tout", tutoLang: "Langue des vidéos", tutoAllLangs: "Toutes",
+  tutoIntro: "Une sélection de vidéos YouTube pour bien démarrer sur PokeMMO : gagner de l'argent, battre les champions d'arène en revanche, venir à bout de Ho-Oh et de Red, et réussir ses élevages.",
+  tutoNote: "Ces vidéos appartiennent à leurs créateurs et s'ouvrent sur YouTube. Certaines peuvent dater d'avant une mise à jour du jeu. Tu connais une meilleure vidéo ?", tutoSuggest: "Propose-la sur GitHub",
   footer: { about: "À propos", legal: "Mentions légales", privacy: "Confidentialité", cookies: "Cookies", source: "Code source" },
   disclaimer: "Projet de fan gratuit et open source, sans lien avec PokeMMO, Nintendo ou The Pokémon Company.",
   notFound: "Page introuvable.", home: "Retour au Pokédex",
@@ -200,6 +203,9 @@ const en = {
     "The tree doesn't track abilities: check the day care preview before confirming.",
   ],
 
+  tutoTitle: "Tutorials", tutoSub: "videos", tutoTopics: "Topics", tutoAll: "All", tutoLang: "Video language", tutoAllLangs: "All",
+  tutoIntro: "A selection of YouTube videos to get started in PokeMMO: making money, gym rematches, beating Ho-Oh and Red, and breeding.",
+  tutoNote: "These videos belong to their creators and open on YouTube. Some may predate a game update. Know a better one?", tutoSuggest: "Suggest it on GitHub",
   footer: { about: "About", legal: "Legal notice", privacy: "Privacy", cookies: "Cookies", source: "Source code" },
   disclaimer: "Free, open-source fan project, not affiliated with PokeMMO, Nintendo or The Pokémon Company.",
   notFound: "Page not found.", home: "Back to the Pokédex",
