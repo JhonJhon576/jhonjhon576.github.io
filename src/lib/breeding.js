@@ -134,17 +134,94 @@ function planNat(T) {
   return best;
 }
 
-export function buildTree(ivs, natured) {
+// IV à 31 d'un Pokémon de la boîte
+export const perfect = item => STATS.filter(s => item.ivs?.[s] === 31);
+
+/**
+ * Construit l'arbre en réutilisant les Pokémon que le joueur possède déjà.
+ * ctx (optionnel) :
+ *   box        : Pokémon possédés { id, species, gender: "M"|"F"|"N", ivs, nature, ability }
+ *   nature     : nature visée
+ *   isFamily   : species → bool (lignée de l'espèce visée, obligatoire côté mère de la lignée)
+ *   isCompatible : species → bool (même groupe œuf, ou Métamorph)
+ * Un nœud couvert par un Pokémon possédé devient une feuille « déjà à toi ».
+ */
+export function buildTree(ivs, natured, ctx = null) {
   let nid = 0;
+  const used = new Set();
+  const box = ctx?.box || [];
+
+  // Pokémon possédé qui remplit la demande (le plus « juste » possible pour ne pas gaspiller un meilleur)
+  function findOwned({ ivs, nat, spine, gender }) {
+    let best = null;
+    for (const it of box) {
+      if (used.has(it.id)) continue;
+      const p31 = perfect(it);
+      if (!ivs.every(s => p31.includes(s))) continue;
+      if (nat && it.nature !== ctx.nature) continue;
+      if (spine ? !ctx.isFamily(it.species) : !ctx.isCompatible(it.species)) continue;
+      if (spine && it.gender !== "F") continue;
+      if (!spine && gender && it.gender !== gender && it.gender !== "N") continue;
+      const waste = p31.length - ivs.length + (it.nature && !nat ? 0.1 : 0);
+      if (!best || waste < best.waste) best = { it, waste };
+    }
+    return best?.it || null;
+  }
+  // Ce qu'un Pokémon possédé apporte déjà à une demande (pour choisir les IV à verrouiller)
+  function coverage(req) {
+    let best = 0;
+    for (const it of box) {
+      if (used.has(it.id)) continue;
+      if (req.spine ? !ctx.isFamily(it.species) || it.gender !== "F" : !ctx.isCompatible(it.species)) continue;
+      if (req.nat && it.nature !== ctx.nature) continue;
+      const c = perfect(it).filter(s => req.ivs.includes(s)).length;
+      best = Math.max(best, c === req.ivs.length ? c + 10 : c);
+    }
+    return best;
+  }
+
   function node(ivs, nat, gender, spine, item) {
-    const n = { id: nid++, ivs, nat, gender, spine, item, kids: null };
+    const n = { id: nid++, ivs, nat, gender, spine, item, kids: null, owned: null };
+    if (ctx && (ivs.length || nat)) {
+      const own = findOwned({ ivs, nat, spine, gender });
+      if (own) {
+        used.add(own.id);
+        n.owned = own;
+        if (own.gender !== "N") n.gender = spine || n.id === 0 ? n.gender : own.gender;
+        return n;
+      }
+    }
     if (nat ? ivs.length === 0 : ivs.length <= 1) return n;
+
     if (nat) {
-      const x = planNat(ivs).pick;
+      let x = planNat(ivs).pick;
+      if (box.length) {
+        // Ce qu'on possède d'abord, puis l'équilibre des Pokémon de base
+        let bestScore = -Infinity;
+        for (const c of ivs) {
+          const s = 1000 * (coverage({ ivs: without(ivs, c), nat: true, spine }) + coverage({ ivs, nat: false, spine: false }))
+            - spread(merge(planNat(without(ivs, c)).leaves, plan(ivs).leaves));
+          if (s > bestScore) { bestScore = s; x = c; }
+        }
+      }
       n.kids = [node(without(ivs, x), true, "F", spine, "ever"), node(ivs, false, "M", false, x)];
     } else {
-      const [x, y] = plan(ivs).pick;
-      n.kids = [node(without(ivs, y), false, "F", spine, x), node(without(ivs, x), false, "M", false, y)];
+      let [x, y] = plan(ivs).pick;
+      if (box.length) {
+        let bestScore = -Infinity;
+        for (const a of ivs) for (const b of ivs) {
+          if (a === b) continue;
+          const s = 1000 * (coverage({ ivs: without(ivs, b), spine }) + coverage({ ivs: without(ivs, a), spine: false }))
+            - spread(merge(plan(without(ivs, b)).leaves, plan(without(ivs, a)).leaves));
+          if (s > bestScore) { bestScore = s; x = a; y = b; }
+        }
+      }
+      // Hors lignée, le genre de la mère se décide selon ce qu'on possède
+      const A = node(without(ivs, y), false, spine ? "F" : null, spine, x);
+      const aGender = spine ? "F" : A.owned && A.owned.gender !== "N" ? A.owned.gender : "F";
+      A.gender = aGender;
+      const B = node(without(ivs, x), false, aGender === "F" ? "M" : "F", false, y);
+      n.kids = [A, B];
     }
     return n;
   }
@@ -176,7 +253,9 @@ export function planSummary(tree, femaleShare) {
     (steps[h] ||= []).push(n);
     return h;
   })(tree);
-  return { breeds, genderSel, rareSel, ever, braces, braceTotal, leaves, steps: steps.filter(Boolean) };
+  const owned = leaves.filter(l => l.owned);
+  const toGet = leaves.filter(l => !l.owned);
+  return { breeds, genderSel, rareSel, ever, braces, braceTotal, leaves, owned, toGet, steps: steps.filter(Boolean) };
 }
 
 export const PRICE_DEFAULTS = { brace: 10000, ever: 0, gender: 5000, rare: 25000 };

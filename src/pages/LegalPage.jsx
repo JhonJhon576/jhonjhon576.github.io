@@ -9,8 +9,8 @@ const UPDATED = { fr: "12 octobre 2026", en: "October 12, 2026" };
 const ext = (url, label) => <a href={url} target="_blank" rel="noreferrer">{label}</a>;
 
 const STORAGE_TABLE = {
-  fr: { lang: "Langue choisie", theme: "Thème clair ou sombre", ivs: "IV cochés dans le planificateur d'élevage", natured: "Option « nature » de l'élevage", bview: "Vue Arbre ou Étapes", prices: "Prix saisis pour l'estimation du coût" },
-  en: { lang: "Chosen language", theme: "Light or dark theme", ivs: "IVs ticked in the breeding planner", natured: "Breeding \"nature\" option", bview: "Tree or Steps view", prices: "Prices entered for the cost estimate" },
+  fr: { lang: "Langue choisie", theme: "Thème clair ou sombre", ivs: "IV cochés dans le planificateur d'élevage", natured: "Option « nature » de l'élevage", prices: "Prix saisis pour l'estimation du coût", box: "Pokémon que tu as ajoutés pour l'élevage (espèce, genre, IV, nature, talent)" },
+  en: { lang: "Chosen language", theme: "Light or dark theme", ivs: "IVs ticked in the breeding planner", natured: "Breeding \"nature\" option", prices: "Prices entered for the cost estimate", box: "Pokémon you added for breeding (species, gender, IVs, nature, ability)" },
 };
 
 function StorageList({ lang }) {
@@ -185,7 +185,7 @@ function ClearButton({ lang }) {
         onClick={() => { clearAll(); location.hash = "/"; location.reload(); }}
         className="mt-1 inline-flex h-10 items-center rounded-xl border border-line bg-panel px-4 text-[0.9rem] text-fg hover:border-accent"
       >
-        {lang === "fr" ? "Effacer mes préférences et recharger" : "Clear my preferences and reload"}
+        {lang === "fr" ? "Effacer mes préférences et ma boîte, puis recharger" : "Clear my preferences and box, then reload"}
       </button>
     </p>
   );
